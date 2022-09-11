@@ -14,7 +14,7 @@ if (isset($_POST["submit"], $_POST["time_start"], $_POST["time_end"], $_POST["ti
     $time_teachs = $_POST["time_teach"];
     $description = $_POST["description"];
 
-    $ok = addReports($user["id"], $time_starts, $time_ends, $time_teachs, $description);  
+    $ok = addReports($user["id"], $time_starts, $time_ends, $time_teachs, $description);
 }
 ?>
 <!doctype html>
@@ -185,6 +185,13 @@ if (isset($_POST["submit"], $_POST["time_start"], $_POST["time_end"], $_POST["ti
                     گزارش با موفقیت ثبت شد.
                 </div>
                 <?php } ?>
+
+                <?php if(isset($ok) && $ok !== true) { ?>
+                <div class="alert alert-warning" role="alert">
+                   <?= $ok ?>
+                </div>
+                <?php } ?>
+
                 <div class="reports"></div>
                 <div class="reports-add">
                     <span>+</span>

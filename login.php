@@ -1,17 +1,25 @@
 <?php
 require "_core.php";
 
-if (isset($_POST["username"], $_POST["password"], $_POST["submit"])) {
-    $username = $_POST["username"];
-    $password = $_POST["password"];
+if ($isAuth === true) {
+    redirect ("index.php");
+}
 
-    $user_id = getUserIdByUserPass($username,$password);
-    if ($user_id !== null) {
-        $_SESSION["user_id"] = $user_id;
-        redirect("index.php");
+if (isset($_POST["username"], $_POST["password"], $_POST["submit"])) {
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
+
+    if ($username === "" || $password === "") {
+        $error = "خطا: وارد کردن رمزعبور ونام کاربری اجباری است";
     }else {
-        $error = true;
-    }
+        $user_id = getUserIdByUserPass($username,$password);
+        if ($user_id !== null) {
+            $_SESSION["user_id"] = $user_id;
+            redirect("index.php");
+        }else {
+            $error = "خطا: کد پرسنلی یا رمز عبور نادرست است";
+        }
+    }  
 }
 ?>
 <!doctype html>
@@ -66,15 +74,15 @@ if (isset($_POST["username"], $_POST["password"], $_POST["submit"])) {
                 <h1 class="h3 mb-3 fw-normal">ورود به سامانه</h1>
                 <?php if(isset($error)) { ?>
                 <div class="alert alert-danger" role="alert">
-                    کدپرسنلی یا رمزعبور نادرست است!
+                    <?= $error ?>
                 </div>
                 <?php } ?>
                 <div class="form-floating">
-                    <input name="username" dir="ltr" type="number" class="form-control" id="floatingInput" placeholder="Username">
+                    <input name="username" dir="ltr" type="number" class="form-control" id="floatingInput" placeholder="Username" required="">
                     <label for="floatingInput">کد پرسنلی</label>
                 </div>
                 <div class="form-floating">
-                    <input name="password" dir="ltr" type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                    <input name="password" dir="ltr" type="password" class="form-control" id="floatingPassword" placeholder="Password" required="">
                     <label for="floatingPassword">رمزعبور</label>
                 </div>
                 <button name="submit" class="w-100 btn btn-lg btn-primary" type="submit">
