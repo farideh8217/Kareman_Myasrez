@@ -6,16 +6,20 @@ if (!$isAuth) {
 }
 $name = trim($user["first_name"] . " " .$user["last_name"]);
 
-if (isset($_POST["submit"], $_POST["time_start"], $_POST["time_end"], $_POST["time_teach"]) 
-&& is_array($_POST["time_start"]) && is_array($_POST["time_end"]) && is_array($_POST["time_teach"]))
+if (isset($_POST["submit"], $_POST["time_start"], $_POST["time_end"], $_POST["time_teach"], $_POST["description"]) 
+    && is_array($_POST["time_start"])
+    && is_array($_POST["time_end"])
+    && is_array($_POST["time_teach"])
+    && is_array($_POST["description"]))
 {
     $time_starts = $_POST["time_start"];
     $time_ends = $_POST["time_end"];
     $time_teachs = $_POST["time_teach"];
-    $description = $_POST["description"];
+    $descriptions = $_POST["description"];
 
-    $ok = addReports($user["id"], $time_starts, $time_ends, $time_teachs, $description);
+    $ok = addReports($user["id"], $time_starts, $time_ends, $time_teachs, $descriptions);
 }
+$today_reports = getTodayReports($user["id"]);
 ?>
 <!doctype html>
 <html lang="fa_IR" dir="rtl">
@@ -166,13 +170,14 @@ if (isset($_POST["submit"], $_POST["time_start"], $_POST["time_end"], $_POST["ti
                 <img class="mb-2" src="logo.png" alt="" width="100px">
                 <h3 class="display-5">سلام <?= $name ?>!</h3>
                 <p class="mt-4">
-                    یک فرد موفق کسی است که می‌تواند با آجر‌هایی که دیگران به سمت او پرتاب کرده‌اند، پایه و اساس محکمی برای خود بنا کند.
+                    <?= $nice_statments ?>
                     <b>
                         دیوید برینکلی؛ فیلمنامه‌نویس
                     </b>
                 </p>
                 <p>
                     <a class="btn btn-primary btn-sm" href="logout.php" role="button">خروج</a>
+                    <a class="btn btn-primary btn-sm" href="archive.php" role="button">بایگانی</a>
                 </p>
             </div>
         </header>
@@ -192,14 +197,34 @@ if (isset($_POST["submit"], $_POST["time_start"], $_POST["time_end"], $_POST["ti
                 </div>
                 <?php } ?>
 
-                <div class="reports"></div>
+                <div class="reports">
+                    <?php foreach ($today_reports as $today_report_item) { ?>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">زمان ورود</label>
+                                    <input name="time_start[]" type="text" class="form-control time-picker" required="" value="<?= $today_report_item["time_start"] ?>">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">زمان خروج</label>
+                                    <input name="time_end[]" type="text" class="form-control time-picker" required="" value="<?= $today_report_item["time_end"] ?>">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">زمان تدریس</label>
+                                    <input name="time_teach[]" type="text" class="form-control time-picker" required="" value="<?= $today_report_item["time_teach"] ?>">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">گزارش فعالیت</label>
+                                    <textarea name="descriptions[]" class="form-control"  rows="6" required=""><?= $today_report_item["description"] ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>    
+                </div>
                 <div class="reports-add">
                     <span>+</span>
                 </div>
-                <div class="mb-3">
-                    <label for="descriptionInput" class="form-label">گزارش فعالیت</label>
-                    <textarea name="description" class="form-control" id="descriptionInput" rows="6" required=""></textarea>
-                </div>
+                
 
                 <button name="submit" class="w-100 btn btn-lg btn-primary" type="submit">
                     ذخیره
@@ -372,15 +397,19 @@ if (isset($_POST["submit"], $_POST["time_start"], $_POST["time_end"], $_POST["ti
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label">زمان ورود</label>
-                    <input name="time_start[]" type="text" class="form-control time-picker">
+                    <input name="time_start[]" type="text" class="form-control time-picker" required="">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">زمان خروج</label>
-                    <input name="time_end[]" type="text" class="form-control time-picker">
+                    <input name="time_end[]" type="text" class="form-control time-picker" required="">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">زمان تدریس</label>
-                    <input name="time_teach[]" type="text" class="form-control time-picker">
+                    <input name="time_teach[]" type="text" class="form-control time-picker" required="">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">گزارش فعالیت</label>
+                    <textarea name="description[]" class="form-control"  rows="6" required=""></textarea>
                 </div>
             </div>
         </div>`;
@@ -394,13 +423,14 @@ if (isset($_POST["submit"], $_POST["time_start"], $_POST["time_end"], $_POST["ti
             });
         };
         window.addEventListener("load", () => {
-            reports.innerHTML = report_item_code;
-            time_picker_handle();
+            reports_add.click();
+            
         });
         reports_add.addEventListener("click", () => {
             const div = document.createElement("div");
             div.innerHTML = report_item_code;
             reports.appendChild(div);
+            
             time_picker_handle();
         });
         </script>
